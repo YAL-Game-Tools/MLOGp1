@@ -11,6 +11,7 @@ import js.html.Element;
 	function getValue():String;
 	function setValue(val:String):String;
 	function setTheme(path:String):Void;
+	function setOption(name:String, val:Dynamic):Void;
 	function clearSelection():Void;
 	var session:AceSession;
 }

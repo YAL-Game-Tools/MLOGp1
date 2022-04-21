@@ -25,8 +25,10 @@ class Main {
 		(cast Browser.window).aceEditor = editor;
 		highlight.MLHighlightRules.init();
 		(cast Browser.window).AceMLogInit();
-		editor.session.setMode("ace/mode/mlog");
-		output.session.setMode("ace/mode/mlog");
+		for (e in [editor, output]) {
+			e.session.setMode("ace/mode/mlog");
+			e.setOption("printMargin", false);
+		}
 		var lang = Ace.require("ace/lib/lang");
 		var delayCompile = lang.delayedCall(function() {
 			output.setValue(compiler.Compiler.proc(editor.getValue()));
