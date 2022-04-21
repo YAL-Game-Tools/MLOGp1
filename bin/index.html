@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>MLOG+1</title>
+	<meta name="description" content="" />
+	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="ace-builds/css/ace.css" />
+</head>
+<body>
+	<div class="app">
+		<div class="toolbar">
+			<input type="button" value="Copy (Ctrl+Enter)" id="copy" />
+			<select id="theme">
+				<option>ambiance</option>
+				<option>chaos</option>
+				<option>chrome</option>
+				<option>clouds</option>
+				<option>clouds_midnight</option>
+				<option>cobalt</option>
+				<option>crimson_editor</option>
+				<option>dawn</option>
+				<option>dracula</option>
+				<option>dreamweaver</option>
+				<option>eclipse</option>
+				<option>github</option>
+				<option>gob</option>
+				<option>gruvbox</option>
+				<option>idle_fingers</option>
+				<option>iplastic</option>
+				<option>katzenmilch</option>
+				<option>kr_theme</option>
+				<option>kuroir</option>
+				<option>merbivore</option>
+				<option>merbivore_soft</option>
+				<option>monokai</option>
+				<option>mono_industrial</option>
+				<option>nord_dark</option>
+				<option>one_dark</option>
+				<option>pastel_on_dark</option>
+				<option>solarized_dark</option>
+				<option>solarized_light</option>
+				<option>sqlserver</option>
+				<option>terminal</option>
+				<option>textmate</option>
+				<option>tomorrow</option>
+				<option>tomorrow_night</option>
+				<option>tomorrow_night_blue</option>
+				<option>tomorrow_night_bright</option>
+				<option>tomorrow_night_eighties</option>
+				<option>twilight</option>
+				<option>vibrant_ink</option>
+				<option>xcode</option>
+			</select>
+		</div>
+		<div class="main">
+			<textarea id="editor"></textarea>
+			<textarea id="output"></textarea>
+		</div>
+	</div>
+	<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/ace-ext/mode-mlog.js" type="text/javascript" charset="utf-8"></script>
+	<script src="script.js"></script>
+</body>
+</html>
