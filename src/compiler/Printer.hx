@@ -1,5 +1,6 @@
 package compiler;
 import compiler.LogicAction;
+import compiler.LogicCondOperator;
 import haxe.ds.Map;
 import js.lib.RegExp;
 
@@ -13,7 +14,7 @@ class Printer {
 	var labels:Map<String, Int> = new Map();
 	var pc = 0;
 	var maxJump = 0;
-	static inline var printPC:Bool = true;
+	static inline var printPC:Bool = false;
 	function new() {
 		
 	}
@@ -48,7 +49,7 @@ class Printer {
 		out[slot] = decorate(action, text);
 		if (pc != null) action.notes.shift();
 	}
-	function invertCondition(cond:LogicIfOperator) {
+	function invertCondition(cond:LogicCondOperator) {
 		return switch (cond) {
 			case Equal: NotEqual;
 			case NotEqual: Equal;
@@ -106,7 +107,7 @@ class Printer {
 	function printAll(actions:Array<LogicAction>) {
 		for (action in actions) print(action, 0);
 		var code = out.join("\n");
-		var needsTrailingEnd = maxJump >= pc;
+		var needsTrailingEnd = pc > 0 && maxJump >= pc;
 		for (label => p in labels) {
 			code = StringTools.replace(code, '{{label:$label}}', "" + p);
 			if (p >= pc) needsTrailingEnd = true;

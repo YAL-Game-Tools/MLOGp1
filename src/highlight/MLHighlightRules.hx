@@ -7,6 +7,7 @@ import ace.AceMacro.*;
 import ace.Ace;
 import ace.AceHighlightTools.*;
 import compiler.LogicAction;
+import compiler.LogicCondOperator;
 import compiler.LogicOperator;
 import highlight.MLRegStr;
 import js.lib.RegExp;
@@ -96,7 +97,7 @@ class MLHighlightRules extends AceHighlight {
 					rsOpt(rsExpr, eol), MLTK.Pending, // 6
 					"\\s*", MLTK.Text,
 					"(?:then)?", MLTK.Keyword,
-				].concat(eol ? ["$", MLTK.Text] : []),
+				].concat(eol ? ["($)", MLTK.Text] : []),
 			});
 		}; pushEolRule(start, genIfThenRule);
 		
@@ -105,7 +106,7 @@ class MLHighlightRules extends AceHighlight {
 				onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
 					@:static var rxStartsWithDigit = new RegExp("^\\d");
 					tokens[2].type = rxStartsWithDigit.test(tokens[2].value) ? MLTK.Number : MLTK.Label;
-					tokens[4].type = LogicIfOperator.valNameMap.exists(tokens[4].value) ? MLTK.Keyword : MLTK.Invalid;
+					tokens[4].type = LogicCondOperator.valNameMap.exists(tokens[4].value) ? MLTK.Keyword : MLTK.Invalid;
 					return tokens;
 				},
 				next: eol ? null : "jump",
@@ -115,7 +116,7 @@ class MLHighlightRules extends AceHighlight {
 					"\\w*", MLTK.Pending,
 					"\\s*", MLTK.Text,
 					"(?:" + rsIdent + ")?", MLTK.Pending,
-				].concat(eol ? ["$", MLTK.Text] : []),
+				].concat(eol ? ["($)", MLTK.Text] : []),
 			});
 		}; pushEolRule(start, genJumpRule);
 		
@@ -139,54 +140,19 @@ class MLHighlightRules extends AceHighlight {
 					"(\\s*)", MLTK.Text,
 					
 					"(\\()", MLTK.LParen,
-				].concat(eol ? ["$", MLTK.Text] : []),
+				].concat(eol ? ["($)", MLTK.Text] : []),
 			});
 		}; pushEolRule(start, genSetFuncRule);
 		
-		start.push(rulePairsExt({ // r = a, r = a op b
-			onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
-				var tk:AceToken = tokens[4];
-				if (tk != null) tk.type = getExprType(tk.value);
-				
-				var op:LogicOperator = null;
-				tk = tokens[6];
-				if (tk != null) {
-					op = LogicOperator.binOpMapper[tk.value];
-					if (op != null) {
-						tk.type = MLTK.Operator;
-					} else if (LogicOperator.valNameMap.exists(tk.value)) {
-						op = cast tk.value;
-						tk.type = MLTK.Keyword;
-					} else tk.type = MLTK.Invalid;
-				}
-				
-				tk = tokens[8];
-				if (tk != null) {
-					if (op != null && LogicOperator.isUnary[op]) {
-						tk.type = MLTK.Invalid;
-					} else tk.type = getExprType(tk.value);
-				}
-				return tokens;
-			},
+		pushEolRule(start, function(eol:Bool) return rulePairsExt({ // r = a, r = a op b
 			rawPairs: [
 				'($rsIdent)', MLTK.Variable,
 				"(\\s*)", MLTK.Text,
 				
 				"(=)", MLTK.Operator,
 				"(\\s*)", MLTK.Text,
-				
-				"(?:" + '($rsExpr)', MLTK.Pending, // 4: arg1
-				"(\\s*)", MLTK.Text,
-				
-				"(?:" + "(" + rsIdent + "|" + LogicOperator.rsSetOps + ")", MLTK.Pending, // 6: op
-				"(\\s*)", MLTK.Text,
-				
-				"(?:" + '($rsExpr)', MLTK.Pending, // 8: arg2
-				"(\\s*)", MLTK.Text,
-				
-				")?)?)?" + "(#.*)?", MLTK.Comment,
-				"$", MLTK.Text,
-			],
+			].concat(eol ? ["($)", MLTK.Text] : []),
+			next: eol ? null : "set",
 		}));
 		
 		function genOpRule(eol:Bool) {
@@ -200,7 +166,7 @@ class MLHighlightRules extends AceHighlight {
 					"op\\b", MLTK.Keyword,
 					"\\s*", MLTK.Text,
 					"(?:" + rsIdent + ")?", MLTK.Pending,
-				].concat(eol ? ["$", MLTK.Text] : []),
+				].concat(eol ? ["($)", MLTK.Text] : []),
 			});
 		}; pushEolRule(start, genOpRule);
 		
@@ -220,6 +186,11 @@ class MLHighlightRules extends AceHighlight {
 			"line": line,
 			"jump": [
 				
+			].concat(line),
+			"set": [
+				rule(function(word) {
+					return LogicOperator.valNameMap.exists(word) ? MLTK.Keyword : getExprType(word);
+				}, rsIdent),
 			].concat(line),
 		}
 	}

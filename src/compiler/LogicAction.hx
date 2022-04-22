@@ -17,20 +17,8 @@ class LogicAction {
 enum LogicActionDef {
 	Label(name:String, action:LogicAction);
 	Block(actions:Array<LogicAction>);
-	IfThen(a:String, op:LogicIfOperator, b:String, then:LogicAction);
+	IfThen(a:String, op:LogicCondOperator, b:String, then:LogicAction);
 	Jump(prefix:String, label:String, rest:String);
 	Other(text:String);
 	Text(text:String);
-}
-@:build(compiler.LogicMacro.buildValueNameMap(valNameMap))
-enum abstract LogicIfOperator(String) {
-	public static var valNameMap:Map<String, String>;
-	var Equal = "equal";
-	var NotEqual = "notEqual";
-	var LessThan = "lessThan";
-	var LessThanEq = "lessThanEq";
-	var GreaterThan = "greaterThan";
-	var GreaterThanEq = "greaterThanEq";
-	var StrictEqual = "strictEqual";
-	var Always = "always";
 }

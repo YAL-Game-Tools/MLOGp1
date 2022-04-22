@@ -3,6 +3,7 @@ package;
 import ace.Ace;
 import ace.AceEditor;
 import compiler.Compiler;
+import compiler.Simplifier;
 import highlight.MLHighlightRules;
 import js.Browser;
 import js.Lib;
@@ -61,6 +62,11 @@ class Main {
 			if (storage != null) storage.setItem('$storagePrefix/theme', themeName);
 			editor.setTheme("ace/theme/" + themeName);
 			output.setTheme("ace/theme/" + themeName);
+		}
+		
+		Browser.document.getElementById("simplify").onclick = function(_) {
+			editor.setValue(Simplifier.proc(editor.getValue()));
+			editor.clearSelection();
 		}
 		
 		Browser.document.addEventListener("keydown", function(e:KeyboardEvent) {

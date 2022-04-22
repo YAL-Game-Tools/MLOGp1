@@ -53,11 +53,14 @@ using StringTools;
 	}
 	//
 	public inline function get(p:Int):Int return source.fastCodeAt(p);
-	public inline function substring(start:Int, ?till:Int):String {
+	public inline function substring(start:Int, till:Int):String {
 		return source.substring(start, till);
 	}
-	public inline function substr(start:Int, ?length:Int):String {
+	public inline function substr(start:Int):String {
 		return source.substr(start, length);
+	}
+	public function getRest():String {
+		return source.substring(pos, length);
 	}
 	//
 	public function isLineStart(pos:Int):Bool {

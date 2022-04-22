@@ -50,7 +50,7 @@ class Compiler {
 		var a = q.readExpr();
 		q.skipLineSpaces();
 		var c = q.read();
-		var op:LogicIfOperator;
+		var op:LogicCondOperator;
 		switch (c) {
 			case "=".code:
 				if (q.skipIfEqu("=".code)) {
@@ -59,7 +59,11 @@ class Compiler {
 			case "!".code if (q.skipIfEqu("=".code)): op = NotEqual;
 			case "<".code: op = q.skipIfEqu(">".code) ? NotEqual : q.skipIfEqu("=".code) ? LessThanEq : LessThan;
 			case ">".code: op = q.skipIfEqu("=".code) ? GreaterThan : GreaterThanEq;
-			default: throw "Expected an operator";
+			default:
+				if (c.isIdent0()) {
+					q.pos--;
+					op = cast q.readIdent();
+				} else throw "Expected an operator";
 		}
 		q.skipLineSpaces();
 		var b = q.readExpr();
@@ -81,7 +85,7 @@ class Compiler {
 			return action(Other('write $arg $result $resIndex'));
 		} else if (op != null) { // a += b
 			if (q.loop) throw 'Only simple operations (e.g. `a $op= b`) are supported.';
-			var func = LogicOperator.binOpMapper[op];
+			var func = LogicOperator.binOpToLogOp[op];
 			if (func == null) throw '$op= is not a recognized operator.';
 			return action(Other('op $func $result $result $arg'));
 		} else if (q.skipIfEqu("(".code)) { // r = f(a[, b])
@@ -129,10 +133,10 @@ class Compiler {
 			q.skipLineSpaces();
 			return action(Other('op $func $result $arg $arg2'));
 		} else { // a = b
-			var mt = LogicOperator.rxOpHere.exec(q.substring(q.pos));
+			var mt = LogicOperator.rxOpHere.exec(q.getRest());
 			if (mt != null) { // a = b + c
 				var op = mt[0];
-				var func = LogicOperator.binOpMapper[op];
+				var func = LogicOperator.binOpToLogOp[op];
 				if (func == null) throw '$op is not a known binary operator.';
 				q.skip(op.length);
 				q.skipLineSpaces();
@@ -207,23 +211,11 @@ class Compiler {
 	}
 	
 	function procLine(line:String, row:Int) {
-		@:static var rxTabs = jsRx(~/^(\s*)(.*)/);
-		var mtTabs = rxTabs.exec(line);
-		nextTab = mtTabs[1];
-		line = mtTabs[2];
+		var parts = CodeTools.splitLine(line);
+		nextTab = parts.tab;
+		line = parts.line;
+		if (parts.comment != null) nextNotes.push(parts.comment);
 		
-		var p = 0;
-		var start = 0;
-		while (p < line.length) {
-			var c = line.charCodeAt(p++);
-			if (c == '"'.code) {
-				while (line.charCodeAt(p++) != '"'.code && p < line.length) {};
-			} else if (c == '#'.code) {
-				nextNotes.push(line.substring(p));
-				line = line.substring(0, p - 1);
-				break;
-			}
-		}
 		try {
 			actions.push(readAction(line));
 		} catch (x:Exception) {
