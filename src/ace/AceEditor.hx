@@ -14,4 +14,5 @@ import js.html.Element;
 	function setOption(name:String, val:Dynamic):Void;
 	function clearSelection():Void;
 	var session:AceSession;
+	var container:Element;
 }

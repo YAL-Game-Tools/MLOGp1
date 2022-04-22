@@ -15,7 +15,7 @@ body {
 	flex-grow: 1;
 	display: flex;
 }
-.main > * {
+.main > textarea, .main > .ace_editor {
 	flex-grow: 1;
 }
 .main > .ace_editor:not(:first-child) {
@@ -26,4 +26,25 @@ body {
 	margin: 0;
 	margin-top: 4px;
 	font-family: Consolas, monospace;
+}
+#copyfield {
+	position: absolute;
+	display: block;
+	top: -4em;
+	max-height: 3em;
+}
+.ace_editor.ace_dark ~ #copyfield {
+	background: #405070;
+	color: white;
+}
+@media (max-width: 800px) {
+	#output {
+		display: none;
+	}
+	.main {
+		flex-direction: column;
+	}
+	.main > .ace_editor:not(:first-child) {
+		margin-left: 0;
+	}
 }
