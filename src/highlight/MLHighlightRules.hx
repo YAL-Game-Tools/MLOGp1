@@ -25,6 +25,8 @@ class MLHighlightRules extends AceHighlight {
 		return opt ? "(?:" + rs + ")?" : rs;
 	}
 	static function makeRules(hl:AceHighlight):AceHighlightRuleset {
+		var eolPair:Array<String> = ["$", MLTK.Text];
+		var eolPairRaw:Array<String> = ["($)", MLTK.Text];
 		var keywordList = [
 			'read', 'write', 'draw', 'print', 'drawflush', 'printflush',
 			'getlink', 'control', 'radar', 'sensor', 'set', 'op', 'end', 'jump', 'noop',
@@ -52,8 +54,11 @@ class MLHighlightRules extends AceHighlight {
 			rule(MLTK.CString, rsString),
 			rule(MLTK.Number, rsNumber),
 			rule(MLTK.Variable, rsIdent),
+			rule(MLTK.Comma, ","),
 			rule(MLTK.LParen, "\\("),
 			rule(MLTK.RParen, "\\)"),
+			rule(MLTK.LCurly, "\\{"),
+			rule(MLTK.RCurly, "\\}"),
 			rxRule("text", ~/\s+/),
 		];
 		var line = [
@@ -96,8 +101,8 @@ class MLHighlightRules extends AceHighlight {
 					"\\s*", MLTK.Text,
 					rsOpt(rsExpr, eol), MLTK.Pending, // 6
 					"\\s*", MLTK.Text,
-					"(?:then)?", MLTK.Keyword,
-				].concat(eol ? ["($)", MLTK.Text] : []),
+					"(?:then\\b)?", MLTK.Keyword,
+				].concat(eol ? eolPairRaw : []),
 			});
 		}; pushEolRule(start, genIfThenRule);
 		
@@ -116,7 +121,7 @@ class MLHighlightRules extends AceHighlight {
 					"\\w*", MLTK.Pending,
 					"\\s*", MLTK.Text,
 					"(?:" + rsIdent + ")?", MLTK.Pending,
-				].concat(eol ? ["($)", MLTK.Text] : []),
+				].concat(eol ? eolPairRaw : []),
 			});
 		}; pushEolRule(start, genJumpRule);
 		
@@ -140,7 +145,7 @@ class MLHighlightRules extends AceHighlight {
 					"(\\s*)", MLTK.Text,
 					
 					"(\\()", MLTK.LParen,
-				].concat(eol ? ["($)", MLTK.Text] : []),
+				].concat(eol ? eolPairRaw : []),
 			});
 		}; pushEolRule(start, genSetFuncRule);
 		
@@ -151,7 +156,7 @@ class MLHighlightRules extends AceHighlight {
 				
 				"(=)", MLTK.Operator,
 				"(\\s*)", MLTK.Text,
-			].concat(eol ? ["($)", MLTK.Text] : []),
+			].concat(eol ? eolPairRaw : []),
 			next: eol ? null : "set",
 		}));
 		
@@ -166,9 +171,26 @@ class MLHighlightRules extends AceHighlight {
 					"op\\b", MLTK.Keyword,
 					"\\s*", MLTK.Text,
 					"(?:" + rsIdent + ")?", MLTK.Pending,
-				].concat(eol ? ["($)", MLTK.Text] : []),
+				].concat(eol ? eolPairRaw : []),
 			});
 		}; pushEolRule(start, genOpRule);
+		
+		pushEolRule(start, function(eol) { // macro <name>(...)
+			return rulePairs([
+				"macro", MLTK.Keyword,
+				"\\s+", MLTK.Text,
+				rsIdent, MLTK.Keyword,
+				"\\s*", MLTK.Text,
+				"\\(", MLTK.LParen,
+			].concat(eol ? eolPair : []), eol ? null : "macroArgs");
+		});
+		pushEolRule(start, function(eol) { // macro <name>
+			return rulePairs([
+				"macro", MLTK.Keyword,
+				"\\s+", MLTK.Text,
+				rsIdent, MLTK.Keyword,
+			].concat(eol ? eolPair : []));
+		});
 		
 		start = start.concat([
 			rxRule(function(word) {
@@ -178,6 +200,7 @@ class MLHighlightRules extends AceHighlight {
 				return jsOr(keywordMap[word], MLTK.Variable);
 			}, ~/[a-zA-Z_]\w*/, "line"),
 			rxRule(MLTK.Comment, ~/#.*/),
+			rule(MLTK.RCurly, "\\}"), // make a nested rule later
 			rxRule(MLTK.Invalid, ~/\S.*/),
 		]);
 		
@@ -186,6 +209,9 @@ class MLHighlightRules extends AceHighlight {
 			"line": line,
 			"jump": [
 				
+			].concat(line),
+			"macroArgs": [
+				rule(MLTK.Variable, "\\)", "start")
 			].concat(line),
 			"set": [
 				rule(function(word) {

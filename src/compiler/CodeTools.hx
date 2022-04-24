@@ -7,7 +7,7 @@ import ace.AceMacro;
  */
 @:build(tools.LocalStatic.build())
 class CodeTools {
-	public static function splitLine(line:String) {
+	public static function splitLine(line:String):CodeTuple {
 		@:static var rxTabs = AceMacro.jsRx(~/^(\s*)(.*)/);
 		var mtTabs = rxTabs.exec(line);
 		var tab = mtTabs[1];
@@ -26,6 +26,19 @@ class CodeTools {
 				break;
 			}
 		}
-		return { line: line, tab: tab, comment: comment };
+		return new CodeTuple(tab, line, comment);
+	}
+}
+class CodeTuple {
+	public var tab:String;
+	public var line:String;
+	public var comment:String;
+	public function new(tab:String, line:String, comment:String) {
+		this.tab = tab;
+		this.line = line;
+		this.comment = comment;
+	}
+	public function copy():CodeTuple {
+		return new CodeTuple(tab, line, comment);
 	}
 }

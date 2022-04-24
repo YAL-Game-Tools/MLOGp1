@@ -21,5 +21,7 @@ enum abstract MLTK(AceTokenType) from AceTokenType to AceTokenType {
 	var CString = "string";
 	var LParen = "paren.lparen";
 	var RParen = "paren.rparen";
+	var LCurly = "curly.paren.lparen";
+	var RCurly = "curly.paren.rparen";
 	var Text = "text";
 }

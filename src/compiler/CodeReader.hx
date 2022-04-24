@@ -61,4 +61,24 @@ class CodeReader extends StringReader {
 			default: throw "Expected an expression";
 		}
 	}
+	public function readMacroExpr():String {
+		if (skipIfEqu("{".code)) {
+			var start = pos;
+			while (loop) {
+				if (read() == '}'.code) return substring(start, pos - 1);
+			}
+			return substring(start, pos);
+		} else return readExpr();
+	}
+	public function skipCommon(?peekChar:CharCode):Bool {
+		if (peekChar == null) peekChar = peek();
+		if (peekChar == '"'.code) {
+			skip();
+			while (loop) {
+				if (read() == '"'.code) break;
+			}
+			return true;
+		}
+		return false;
+	}
 }
