@@ -20,5 +20,6 @@ enum LogicActionDef {
 	IfThen(a:String, op:LogicCondOperator, b:String, then:LogicAction);
 	Jump(prefix:String, label:String, rest:String);
 	Other(text:String);
+	/** Text-only - doesn't increment PC */
 	Text(text:String);
 }

@@ -51,7 +51,8 @@ class CompSetOp {
 			} else {
 				return comp.action(Other('op $func $result ${args[0]} ${args[1]}'));
 			}
-		} else if (q.skipIfEqu("[".code)) { // a = b[i]
+		}
+		else if (q.skipIfEqu("[".code)) { // a = b[i]
 			if (resIndex != null) throw "Cannot move data between memory cells directly.";
 			q.skipLineSpaces();
 			var srcIndex = q.readExpr();
@@ -59,14 +60,20 @@ class CompSetOp {
 			if (!q.skipIfEqu("]".code)) throw "Expected a closing ] after an index.";
 			if (q.loop) throw "Trailing data after a memory read.";
 			return comp.action(Other('read $result $arg $srcIndex'));
-		} else if (q.peek().isIdent0()) { // a = b op c
+		}
+		else if (q.skipIfEqu(".".code)) { // `f = @unit.@flag` -> `sensor f @unit @flag`
+			var field = q.readExpr();
+			return comp.action(Other('sensor $result $arg $field'));
+		}
+		else if (q.peek().isIdent0()) { // `a = b op c`
 			var func = q.readIdent();
 			if (!LogicOperator.valNameMap.exists(func)) throw '$func is not a known function/operator';
 			q.skipLineSpaces();
 			var arg2 = q.readExpr();
 			q.skipLineSpaces();
 			return comp.action(Other('op $func $result $arg $arg2'));
-		} else { // a = b
+		} 
+		else { // `a = b` or `a = b + c`
 			var mt = LogicOperator.rxOpHere.exec(q.getRest());
 			if (mt != null) { // a = b + c
 				var op = mt[0];

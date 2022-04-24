@@ -8,6 +8,7 @@ import js.lib.RegExp;
  * ...
  * @author YellowAfterlife
  */
+@:build(tools.LocalStatic.build())
 class Simplifier {
 	public static function proc(code:String) {
 		var pairs:Array<SimplifierPair> = code.split("\n").map(function(line) {
@@ -63,6 +64,16 @@ class Simplifier {
 				} else if (LogicOperator.isUnary[op]) {
 					set('$r = $op($a)');
 				}
+				continue;
+			}
+			
+			@:static var rxSensor = new RegExp("^sensor\\b\\s*"
+				+ "(" + MLRegStr.rsIdent + ")\\s*"
+				+ "(" + MLRegStr.rsExpr + ")\\s*"
+				+ "(" + MLRegStr.rsExpr + ")");
+			mt = rxSensor.exec(line);
+			if (mt != null) {
+				set(mt[1] + " = " + mt[2] + "." + mt[3]);
 				continue;
 			}
 			
