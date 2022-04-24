@@ -49,7 +49,7 @@ class CodeReader extends StringReader {
 		var c:CharCode = peek();
 		switch (c) {
 			case "-".code: return readNumber();
-			case "@".code: return "@" + readIdent();
+			case "@".code: skip(); return "@" + readIdent();
 			case '"'.code:
 				skip();
 				while (loop) {
