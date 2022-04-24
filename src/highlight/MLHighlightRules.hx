@@ -24,14 +24,25 @@ class MLHighlightRules extends AceHighlight {
 	static inline function rsOpt(rs:String, opt:Bool = true) {
 		return opt ? "(?:" + rs + ")?" : rs;
 	}
+	static function listToMap<T>(words:Array<String>, val:T):Map<String, T> {
+		var m = new Map();
+		for (word in words) m[word] = val;
+		return m;
+	}
+	public static var uControl = [
+		"idle", "stop", "move", "approach", "boost", "pathfind", "target", "targetp",
+		"itemDrop", "itemTake", "payDrop", "payTake", "payEnter", "mine", "flag",
+		"build", "getBlock", "within"
+	];
+	
 	static function makeRules(hl:AceHighlight):AceHighlightRuleset {
 		var eolPair:Array<String> = ["$", MLTK.Text];
 		var eolPairRaw:Array<String> = ["($)", MLTK.Text];
-		var keywordList = [
+		var keywordMap = listToMap([
 			'read', 'write', 'draw', 'print', 'drawflush', 'printflush',
 			'getlink', 'control', 'radar', 'sensor', 'set', 'op', 'end', 'jump', 'noop',
 			'ubind', 'ucontrol', 'ulocate', 'wait'
-		];
+		], MLTK.Keyword);
 		function getExprType(expr:String):AceTokenType {
 			var c:CharCode = expr.charCodeAt(0);
 			if (c == "@".code) return MLTK.AtTag;
@@ -44,8 +55,6 @@ class MLHighlightRules extends AceHighlight {
 			if (c == '-'.code || c == '+'.code || c == '.'.code || c.isDigit()) return MLTK.Number;
 			return MLTK.Invalid;
 		}
-		var keywordMap = new Map();
-		for (word in keywordList) keywordMap[word] = "keyword";
 		var base = [
 			rxRule(MLTK.Comment, ~/#.*/),
 			rxRule(MLTK.AtTag, ~/@\w+/),
@@ -190,6 +199,22 @@ class MLHighlightRules extends AceHighlight {
 				"\\s+", MLTK.Text,
 				rsIdent, MLTK.Keyword,
 			].concat(eol ? eolPair : []));
+		});
+		
+		var ucontrolMap = listToMap(uControl, true);
+		pushEolRule(start, function(eol) { // ucontrol variants
+			return rulePairsExt({
+				onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
+					tokens[2].type = ucontrolMap[tokens[2].value] ? MLTK.Keyword : MLTK.Invalid;
+					return tokens;
+				},
+				pairs: [
+					"ucontrol", MLTK.Keyword,
+					"\\s+", MLTK.Text,
+					rsIdent, MLTK.Pending,
+				].concat(eol ? eolPair : []),
+				next: eol ? null : "line"
+			});
 		});
 		
 		start = start.concat([

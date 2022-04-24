@@ -19,13 +19,34 @@ body {
 	flex-grow: 1;
 }
 .main > .ace_editor:not(:first-child) {
-	margin-left: 4px
+	margin-left: 0.25em;
 }
 .app #editor, .app .ace_editor {
-	border: 1px solid rgba(0,0,0,0.5);
 	margin: 0;
-	margin-top: 4px;
+	margin-top: 0.25em;
 	font-family: Consolas, monospace;
+}
+.app #editor, .app .ace_editor, #statusbar {
+	border: 1px solid rgba(0,0,0,0.5);
+}
+.topbar {
+	display: flex;
+}
+#toolbar {
+	margin-right: 0.25em;
+}
+#statusbar {
+	flex-grow: 1;
+	padding: 0 0.25em;
+	font-size: 85%;
+	display: flex;
+	align-items: center;
+	min-height: 1.25em;
+}
+#statusbar span {
+	text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 #copyfield {
 	position: absolute;
@@ -38,6 +59,16 @@ body {
 	color: white;
 }
 @media (max-width: 800px) {
+	.topbar {
+		flex-direction: column;
+	}
+	#toolbar {
+		margin-right: 0;
+	}
+	#statusbar {
+		flex-grow: inherit;
+		margin-top: 0.25em;
+	}
 	#output {
 		display: none;
 	}

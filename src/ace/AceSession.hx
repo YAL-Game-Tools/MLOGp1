@@ -8,4 +8,5 @@ import ace.types.AceAnnotation;
 @:native("AceSession") extern class AceSession {
 	function setMode(mode:String):Void;
 	function setAnnotations(annotations:Array<AceAnnotation>):Void;
+	function getLine(row:Int):String;
 }
