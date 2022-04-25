@@ -4,7 +4,7 @@ package compiler;
  * ...
  * @author YellowAfterlife
  */
-@:build(compiler.LogicMacro.buildValueNameMap(valNameMap))
+@:build(compiler.LogicMacroTools.buildValueNameMap(valNameMap))
 enum abstract LogicCondOperator(String) {
 	public static var valNameMap:Map<String, String>;
 	public static var opToLogic:Map<String, LogicCondOperator>;

@@ -49,34 +49,7 @@ class Compiler {
 	);
 	static inline var rsIdent:String = "[_a-zA-Z]\\w*";
 	
-	function readIfThen(line:String) {
-		var q = new CodeReader(line);
-		q.skipLineSpaces();
-		var a = q.readExpr();
-		q.skipLineSpaces();
-		var c = q.read();
-		var op:LogicCondOperator;
-		switch (c) {
-			case "=".code:
-				if (q.skipIfEqu("=".code)) {
-					op = q.skipIfEqu("=".code) ? StrictEqual : Equal;
-				} else op = Equal;
-			case "!".code if (q.skipIfEqu("=".code)): op = NotEqual;
-			case "<".code: op = q.skipIfEqu(">".code) ? NotEqual : q.skipIfEqu("=".code) ? LessThanEq : LessThan;
-			case ">".code: op = q.skipIfEqu("=".code) ? GreaterThan : GreaterThanEq;
-			default:
-				if (c.isIdent0()) {
-					q.pos--;
-					op = cast q.readIdent();
-				} else throw "Expected an operator";
-		}
-		q.skipLineSpaces();
-		var b = q.readExpr();
-		q.skipLineSpaces();
-		if (q.skipIfIdentEquals("then")) q.skipLineSpaces();
-		return action(IfThen(a, op, b, readAction(q.substring(q.pos, q.length))));
-	}
-	function readAction(line:String):LogicAction {
+	public function readAction(line:String):LogicAction {
 		@:static var rxLabel = new RegExp('^(($rsIdent)\\s*:\\s*)(.*)');
 		var mt = rxLabel.exec(line);
 		if (mt != null) {
@@ -87,8 +60,7 @@ class Compiler {
 		
 		@:static var rxIf = new RegExp("^if\\b\\s*(.*)");
 		mt = rxIf.exec(line);
-		if (mt != null) return readIfThen(mt[1]);
-		
+		if (mt != null) return CompIfThen.proc(this, mt[1]);
 		
 		{ // check for act1; act2
 			var parts = [];
@@ -177,31 +149,36 @@ class Compiler {
 			return action(Block(actions));
 		}
 		
+		@:static var rxEndMacro = new RegExp("^endmacro\\b");
+		if (rxEndMacro.test(line)) throw "endmacro without a macro";
+		
 		@:static var rxAction = new RegExp("^[_a-zA-Z]");
 		if (rxAction.test(line)) {
 			return action(Other(line));
 		} else return action(Text(line));
 	}
-	
-	function procLine(line:String, row:Int) {
-		var parts = CodeTools.splitLine(line);
-		nextTab = parts.tab;
-		line = parts.line;
-		if (parts.comment != null) nextNotes.push(parts.comment);
+	public function readLine(rawLine:String, ?row:Int) {
+		if (row == null) row = index - 1;
 		
+		var tup = CodeTools.splitLine(rawLine);
+		var oldTab = nextTab;
+		nextTab = tup.tab;
+		if (tup.comment != null) nextNotes.push(tup.comment);
+		
+		var result:LogicAction;
 		try {
-			actions.push(readAction(line));
+			result = readAction(tup.line);
 		} catch (x:Exception) {
 			annotations.push({ row: row, column: 0, type: "error", text: x.message });
-			actions.push(new LogicAction(nextTab, Text("noop"), [x.message, line]));
+			result = new LogicAction(nextTab, Text("noop"), [x.message, rawLine]);
 		}
+		nextTab = oldTab;
+		return result;
 	}
 	
 	function procAll() {
 		while (loop) {
-			var row = index;
-			var line = lines[index++];
-			procLine(line, row);
+			actions.push(readLine(next()));
 		}
 	}
 	public static function proc(code:String) {

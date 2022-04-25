@@ -7,7 +7,7 @@ import haxe.macro.Expr.Field;
  * ...
  * @author YellowAfterlife
  */
-class LogicMacro {
+class LogicMacroTools {
 	public static macro function buildValueNameMap(nameVar:Expr):Array<Field> {
 		var targetName = switch (nameVar.expr) {
 			case EConst(CIdent(id)): id;

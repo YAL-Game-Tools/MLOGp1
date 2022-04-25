@@ -17,7 +17,7 @@ class LogicAction {
 enum LogicActionDef {
 	Label(name:String, action:LogicAction);
 	Block(actions:Array<LogicAction>);
-	IfThen(a:String, op:LogicCondOperator, b:String, then:LogicAction);
+	IfThen(a:String, op:LogicCondOperator, b:String, then:LogicAction, otrw:LogicAction);
 	Jump(prefix:String, label:String, rest:String);
 	Other(text:String);
 	/** Text-only - doesn't increment PC */

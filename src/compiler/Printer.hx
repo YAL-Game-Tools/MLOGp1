@@ -20,6 +20,8 @@ class Printer {
 	}
 	var extraTab = 0;
 	function decorate(action:LogicAction, text:String) {
+		var tab = "";
+		for (_ in 0 ... extraTab) tab += "    ";
 		text = StringTools.lpad("", "    ", extraTab) + action.tab + text;
 		if (action.notes.length > 0) {
 			@:static var rxEndsWithSpace = new RegExp("\\s$");
@@ -44,10 +46,13 @@ class Printer {
 		if (incPC) pc++;
 		return i;
 	}
-	function fillSlot(slot:Int, action:LogicAction, text:String, ?pc:Int) {
-		if (pc != null) action.notes.unshift("pc:" + pc);
+	function fillSlot(slot:Int, action:LogicAction, text:String, ?pc:Int, ?tab:Int) {
+		var oldTab = extraTab;
+		if (tab != null) extraTab = tab;
+		if (printPC && pc != null) action.notes.unshift("pc:" + pc);
 		out[slot] = decorate(action, text);
-		if (pc != null) action.notes.shift();
+		if (printPC && pc != null) action.notes.shift();
+		if (tab != null) extraTab = oldTab;
 	}
 	function invertCondition(cond:LogicCondOperator) {
 		return switch (cond) {
@@ -67,7 +72,7 @@ class Printer {
 				print(act, tab);
 			case Block(actions):
 				for (act in actions) print(act, tab);
-			case IfThen(a, op, b, then):
+			case IfThen(a, op, b, then, null):
 				switch (then.def) {
 					case Jump(pre, label, ""):
 						action.notes.push("dest: " + label);
@@ -89,6 +94,38 @@ class Printer {
 							action.notes = [];
 							fillSlot(slot2, action, 'jump $pc always 0 0');
 						}
+				}
+			case IfThen(a, op, b, then, otrw):
+				switch (then.def) {
+					case Jump(pre, label, ""):
+						// if <cond>
+						// - jump label
+						// ...else
+						action.notes.push("dest: " + label);
+						add(action, 'jump {{label:$label}} $op $a $b');
+						print(otrw, tab + 1);
+					default:
+						// if a != 1 jump _else
+						// > ...then
+						// > jump _endif
+						// _else:
+						// > ...else
+						// _endif:
+						var invOp = invertCondition(op);
+						if (invOp == null) {
+							// if we don't have an inverted operator for that, simply
+							// swap then/else branches
+							invOp = op;
+							var _tmp = then; then = otrw; otrw = _tmp;
+						}
+						var ifPC = pc, ifSlot = addSlot();
+						print(then, tab);
+						var thenPC = pc, thenSlot = addSlot();
+						fillSlot(ifSlot, action, 'jump $pc $invOp $a $b # if', ifPC);
+						print(otrw, tab);
+						fillSlot(thenSlot, action, 'jump $pc always 0 0 # else', thenPC);
+						maxJump = pc;
+						out.push(action.tab + '# end if (pc:$ifPC)');
 				}
 			case Jump(prefix, label, arg):
 				if (arg == null || arg == "") arg = " always 0 0";

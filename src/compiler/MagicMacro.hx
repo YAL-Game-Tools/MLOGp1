@@ -78,25 +78,18 @@ class MagicMacro {
 			q.skipLineSpaces();
 		}
 		
-		if (q.skipIfEqu("{".code)) {
+		if (!q.loop) { // `macro name<eol>...exprs<eol>endmacro`
 			q.skipLineSpaces();
-			if (q.loop) {
-				m.lines.push(new CodeTuple(firstData.tab, q.getRest(), firstData.comment));
-			}
-			@:static var rxEnd = new RegExp("(.*)\\}\\s*");
+			@:static var rxEnd = new RegExp("^endmacro\\s*$");
+			var closed = false;
 			while (comp.loop) {
 				var line = comp.next();
 				var tup = CodeTools.splitLine(line);
 				var mt = rxEnd.exec(tup.line);
-				if (mt != null) {
-					if (mt[1].length > 0) {
-						m.lines.push(tup);
-					}
-					break;
-				} else {
-					m.lines.push(tup);
-				}
+				if (mt != null) { closed = true; break; }
+				m.lines.push(tup);
 			}
+			if (!closed) throw "Unclosed macro block";
 		} else {
 			m.lines.push(new CodeTuple(firstData.tab, q.getRest(), firstData.comment));
 		}

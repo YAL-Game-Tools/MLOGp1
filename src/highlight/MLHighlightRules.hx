@@ -201,6 +201,20 @@ class MLHighlightRules extends AceHighlight {
 			].concat(eol ? eolPair : []));
 		});
 		
+		pushEolRule(start, function(eol) { // macro <name>
+			return rulePairs([
+				"else\\b", MLTK.Keyword,
+				"\\s*", MLTK.Text,
+			].concat(eol ? eolPair : []), eol ? null : "start");
+		});
+		for (endof in ["endmacro", "endif"]) {
+			start.push(rulePairs([
+				endof, MLTK.Keyword,
+				"\\s*", MLTK.Text,
+				".*$", MLTK.Invalid,
+			], null));
+		}
+		
 		var ucontrolMap = listToMap(uControl, true);
 		pushEolRule(start, function(eol) { // ucontrol variants
 			return rulePairsExt({
@@ -225,7 +239,6 @@ class MLHighlightRules extends AceHighlight {
 				return jsOr(keywordMap[word], MLTK.Variable);
 			}, ~/[a-zA-Z_]\w*/, "line"),
 			rxRule(MLTK.Comment, ~/#.*/),
-			rule(MLTK.RCurly, "\\}"), // make a nested rule later
 			rxRule(MLTK.Invalid, ~/\S.*/),
 		]);
 		

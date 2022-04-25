@@ -6,7 +6,7 @@ import js.lib.RegExp;
  * ...
  * @author YellowAfterlife
  */
-@:build(compiler.LogicMacro.buildValueNameMap(valNameMap))
+@:build(compiler.LogicMacroTools.buildValueNameMap(valNameMap))
 enum abstract LogicOperator(String) {
 	public static var valNameMap:Map<String, String>;
 	public static var isUnary:Map<LogicOperator, Bool> = {
