@@ -120,7 +120,9 @@ class Compiler {
 			q.skipLineSpaces();
 			if (q.skipIfEqu("(".code)) { // macro(a, b)
 				var closed = false;
-				while (q.loop) {
+				if (q.skipIfEqu(")".code)) {
+					closed = true;
+				} else while (q.loop) {
 					args.push(q.readMacroExpr());
 					q.skipLineSpaces();
 					if (q.skipIfEqu(")".code)) {
@@ -129,6 +131,7 @@ class Compiler {
 						// OK!
 					} else throw "Expected a `)` or `,` in macro arguments.";
 				}
+				if (!closed) throw "Unclosed macro call";
 			} else { // macro a b
 				while (q.loop) {
 					args.push(q.readMacroExpr());
