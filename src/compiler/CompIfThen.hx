@@ -41,7 +41,7 @@ class CompIfThen {
 		if (q.skipIfIdentEquals("then")) q.skipLineSpaces();
 		if (!q.loop) { // `if a ?? b [then]<eol>...actions<eol>endif`
 			var thenActions = [];
-			var elseActions = null;
+			var elseAction = null;
 			
 			@:static var rxElse = new RegExp("^\\s*else\\b\\s*(.+)?");
 			@:static var rxEndIf = new RegExp("^\\s*endif\\b");
@@ -51,14 +51,15 @@ class CompIfThen {
 				var mt = rxElse.exec(line);
 				if (mt != null) {
 					if (mt[1] == null) {
-						elseActions = [];
+						var elseActions = [];
 						while (comp.loop) {
 							line = comp.next();
 							if (rxEndIf.test(line)) { closed = true; break; }
 							elseActions.push(comp.readLine(line));
 						}
+						elseAction = comp.action(Block(elseActions));
 					} else {
-						elseActions = [comp.readAction(mt[1])];
+						elseAction = comp.readAction(mt[1]);
 						closed = true;
 					}
 					break;
@@ -67,12 +68,7 @@ class CompIfThen {
 				thenActions.push(comp.readLine(line));
 			}
 			if (!closed) throw "Unclosed if-block";
-			return comp.action(IfThen(a, op, b,
-				thenActions.length == 1 ? thenActions[0] : comp.action(Block(thenActions)),
-				elseActions == null ? null : (
-					elseActions.length == 1 ? elseActions[0] : comp.action(Block(elseActions))
-				)
-			));
+			return comp.action(IfThen(a, op, b, comp.action(Block(thenActions)), elseAction));
 		} else {
 			return comp.action(IfThen(a, op, b, comp.readAction(q.substring(q.pos, q.length)), null));
 		}

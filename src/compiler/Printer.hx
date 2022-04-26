@@ -82,7 +82,7 @@ class Printer {
 						if (invOp != null) {
 							var slotPC = pc;
 							var slot = addSlot();
-							print(then, tab + 1);
+							print(then, then.def.match(Block(_)) ? tab : tab + 1);
 							fillSlot(slot, action, 'jump $pc $invOp $a $b', slotPC);
 							maxJump = pc;
 							out.push(action.tab + '# end if (pc:$slotPC)');
@@ -90,7 +90,7 @@ class Printer {
 							var slot1 = addSlot();
 							var slot2 = addSlot();
 							fillSlot(slot1, action, 'jump $pc $op $a $b');
-							print(then, tab + 1);
+							print(then, then.def.match(Block(_)) ? tab : tab + 1);
 							action.notes = [];
 							fillSlot(slot2, action, 'jump $pc always 0 0');
 						}
