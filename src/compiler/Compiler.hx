@@ -155,6 +155,8 @@ class Compiler {
 		@:static var rxEndMacro = new RegExp("^endmacro\\b");
 		if (rxEndMacro.test(line)) throw "endmacro without a macro";
 		
+		@:static var rxEndIf = new RegExp("^endif\\b");
+		if (rxEndIf.test(line)) throw "endif without an if";
 		@:static var rxAction = new RegExp("^[_a-zA-Z]");
 		if (rxAction.test(line)) {
 			return action(Other(line));
