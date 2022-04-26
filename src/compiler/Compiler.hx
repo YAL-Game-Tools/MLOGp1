@@ -157,6 +157,25 @@ class Compiler {
 		
 		@:static var rxEndIf = new RegExp("^endif\\b");
 		if (rxEndIf.test(line)) throw "endif without an if";
+		
+		@:static var rxPrint = new RegExp("^print(flush)?\\b\\s*(.*)");
+		mt = rxPrint.exec(line);
+		if (mt != null) {
+			var q = new CodeReader(mt[2]);
+			var flushTarget = null;
+			if (mt[1] != null) {
+				flushTarget = q.readExpr();
+				q.skipLineSpaces();
+			}
+			var out = [];
+			while (q.loop) {
+				out.push(action(Other("print " + q.readExpr())));
+				q.skipLineSpaces();
+			}
+			if (flushTarget != null) out.push(action(Other("printflush " + flushTarget)));
+			return out.length == 1 ? out[1] : action(Block(out));
+		}
+		
 		@:static var rxAction = new RegExp("^[_a-zA-Z]");
 		if (rxAction.test(line)) {
 			return action(Other(line));
