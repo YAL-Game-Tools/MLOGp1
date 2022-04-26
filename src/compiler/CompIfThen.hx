@@ -21,8 +21,14 @@ class CompIfThen {
 					op = q.skipIfEqu("=".code) ? StrictEqual : Equal;
 				} else op = Equal;
 			case "!".code if (q.skipIfEqu("=".code)): op = NotEqual;
-			case "<".code: op = q.skipIfEqu(">".code) ? NotEqual : q.skipIfEqu("=".code) ? LessThanEq : LessThan;
-			case ">".code: op = q.skipIfEqu("=".code) ? GreaterThan : GreaterThanEq;
+			case "<".code:
+				if (q.skipIfEqu(">".code)) { // <>
+					op = NotEqual;
+				} else if (q.skipIfEqu("=".code)) { // <=
+					op = LessThanEq;
+				} else op = LessThan;
+			case ">".code:
+				op = q.skipIfEqu("=".code) ? GreaterThanEq : GreaterThan;
 			default:
 				if (c.isIdent0()) {
 					q.pos--;
