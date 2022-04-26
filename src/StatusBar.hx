@@ -102,6 +102,12 @@ class StatusBar {
 			return ttUControl;
 		}
 		
+		@:static var rxULocate = jsRx(~/^ulocate\s+building\b/);
+		if (rxULocate.test(line)) return "<b>ulocate building</b> kind isEnemy (unused) outX outY foundVar buildingVar";
+		
+		@:static var rxULocate = jsRx(~/^ulocate\b/);
+		if (rxULocate.test(line)) return "<b>ulocate</b> (ore|building|spawn|damaged) ...";
+		
 		@:static var rxPrint = jsRx(~/^print\b/);
 		if (rxPrint.test(line)) return "<b>print</b> expr";
 		
