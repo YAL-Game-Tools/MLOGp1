@@ -85,18 +85,11 @@ class MLHighlightRules extends AceHighlight {
 		function genIfThenRule(eol:Bool) {
 			return rulePairsExt({
 				onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
-					@:static var opMapper = [
-						"==" => true,
-						"!=" => true,
-						"<>" => true,
-						"<" => true,
-						"<=" => true,
-						">" => true,
-						">=" => true,
-						"===" => true,
-					];
 					tokens[2].type = getExprType(tokens[2].value);
-					tokens[4].type = opMapper[tokens[4].value] ? MLTK.Operator : MLTK.Invalid;
+					var op = tokens[4].value;
+					tokens[4].type = (LogicCondOperator.opToLogic.exists(op) ? MLTK.Operator
+						: (LogicCondOperator.logicToOp.exists(cast op) ? MLTK.Keyword : MLTK.Invalid)
+					);
 					tokens[6].type = getExprType(tokens[6].value);
 					return tokens;
 				},
@@ -106,7 +99,7 @@ class MLHighlightRules extends AceHighlight {
 					"\\s*", MLTK.Text,
 					rsOpt(rsExpr, eol), MLTK.Pending, // 2
 					"\\s*", MLTK.Text,
-					"==|!=|<>|<|<=|>|>=|===|\\S*", MLTK.Operator,
+					"(?:" + LogicCondOperator.rsCondOp + "|" + rsIdent + ")", MLTK.Operator,
 					"\\s*", MLTK.Text,
 					rsOpt(rsExpr, eol), MLTK.Pending, // 6
 					"\\s*", MLTK.Text,
