@@ -2,6 +2,7 @@ package compiler;
 import compiler.LogicAction;
 import compiler.LogicCondOperator;
 import haxe.ds.Map;
+import js.html.InputElement;
 import js.lib.RegExp;
 
 /**
@@ -14,7 +15,7 @@ class Printer {
 	var labels:Map<String, Int> = new Map();
 	var pc = 0;
 	var maxJump = 0;
-	static inline var printPC:Bool = false;
+	public static var printPC:Bool = true;
 	function new() {
 		
 	}

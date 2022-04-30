@@ -18,9 +18,13 @@ import js.html.Element;
 	}
 	function setTheme(path:String, ?cb:Void->Void):Void;
 	function setOption(name:String, val:Dynamic):Void;
+	function setOptions(opts:Dynamic):Void;
+	function getOption(name:String):Dynamic;
+	function getOptions():Dynamic;
 	function clearSelection():Void;
 	function on(event:String, fn:Function):Void;
 	var session:AceSession;
+	var renderer:Dynamic;
 	var container:Element;
 	var selection:AceSelection;
 }

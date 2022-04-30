@@ -1,60 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="--ace-fg: black; --ace-bg: white">
 <head>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width">
 	<title>MLOG+1</title>
 	<meta name="description" content="" />
-	<link rel="stylesheet" href="style.css?v=2022-04-22c" />
+	<link rel="stylesheet" href="style.css?v=2022-04-29" />
+	<link rel="stylesheet" href="menu.css?v=2022-04-25" />
 	<link rel="stylesheet" href="ace-builds/css/ace.css" />
 </head>
 <body>
 	<div class="app">
 		<div class="topbar">
-			<div id="toolbar">
+			<div id="toolbar" style="position: relative">
+				<div class="menu" id="menu" style="display: none">
+					<li id="simplify">
+						Simplify
+						<div><p>
+							Replaces vanilla MLOG instructions by shorthands where possible.
+						</p></div>
+					</li><li onclick="settings.style.display=settings.style.display?'':'none'; menu.style.display='none'">
+						Settings
+					</li><a href="https://github.com/YAL-Game-Tools/MLOGp1/blob/main/README.md">
+						Help
+					</a>
+				</div>
+				<input type="button" value="Menu" onclick="document.getElementById('menu').style.display = ''" />
 				<input type="button" value="Copy (Ctrl+Enter)" id="copy" />
-				<input type="button" value="Simplify" title="Replaces instructions with shorthands where possible" id="simplify" />
-				<select id="theme">
-					<option>ambiance</option>
-					<option>chaos</option>
-					<option>chrome</option>
-					<option>clouds</option>
-					<option>clouds_midnight</option>
-					<option>cobalt</option>
-					<option>crimson_editor</option>
-					<option>dawn</option>
-					<option>dracula</option>
-					<option>dreamweaver</option>
-					<option>eclipse</option>
-					<option>github</option>
-					<option>gob</option>
-					<option>gruvbox</option>
-					<option>idle_fingers</option>
-					<option>iplastic</option>
-					<option>katzenmilch</option>
-					<option>kr_theme</option>
-					<option>kuroir</option>
-					<option>merbivore</option>
-					<option>merbivore_soft</option>
-					<option>monokai</option>
-					<option>mono_industrial</option>
-					<option>nord_dark</option>
-					<option>one_dark</option>
-					<option>pastel_on_dark</option>
-					<option>solarized_dark</option>
-					<option>solarized_light</option>
-					<option>sqlserver</option>
-					<option>terminal</option>
-					<option>textmate</option>
-					<option>tomorrow</option>
-					<option>tomorrow_night</option>
-					<option>tomorrow_night_blue</option>
-					<option>tomorrow_night_bright</option>
-					<option>tomorrow_night_eighties</option>
-					<option>twilight</option>
-					<option>vibrant_ink</option>
-					<option>xcode</option>
-				</select>
 			</div>
 			<div id="statusbar">
 				<span></span>
@@ -66,8 +38,17 @@
 			<textarea id="copyfield" tabindex="-1"></textarea>
 		</div>
 	</div>
+	<div class="popup-ctr" id="settings" style="display:none">
+		<div class="popup-bg"></div>
+		<div class="popup">
+			<label for="showPC">
+				<input type="checkbox" id="showPC" /> Show instruction IDs
+			</label>
+			<input type="button" id="code-settings" value="Code editor settings" />
+		</div>
+	</div>
 	<script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="ace-ext/mode-mlog.js?v=2022-04-22c" type="text/javascript" charset="utf-8"></script>
+	<script src="ace-ext/mode-mlog.js?v=2022-04-25" type="text/javascript" charset="utf-8"></script>
 	<script src="script.js"></script>
 </body>
 </html>

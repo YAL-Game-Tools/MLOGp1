@@ -1,0 +1,67 @@
+.menu {
+	top: 100%;
+	top: calc(100% + 2px);
+	margin-top: 1px;
+	z-index: 1000;
+	position: absolute;
+	border: 1px solid #BABABA;
+	background: #fdfdfd;
+	white-space: nowrap;
+	color: black;
+	box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+	list-style: none;
+	margin: 0;
+	padding: 2px 0;
+	font: 9pt "Segoe UI", sans-serif;
+}
+.menu li, .menu > a {
+	padding: 4px 20px;
+	cursor: default;
+	position: relative;
+}
+.menu > a {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+}
+.menu .menu-separator {
+	background: #E9E9E9;
+	height: 1px;
+	padding: 0;
+	margin: 5px 1px;
+}
+.menu li:not([disabled]):not(.menu-separator):hover,
+.menu > a:not([disabled]):not(.menu-separator):hover{
+	background: #EBEBEB;
+}
+.menu li > div,
+.menu > a > div {
+	position: absolute;
+	left: calc(100% + 0.75em);
+	top: 0;
+	/*max-width: 10em;
+	white-space: normal;*/
+	background: rgba(0, 0, 0, 0.7);
+	padding: 0.3em 0.5em;
+	color: white;
+	pointer-events:none;
+}
+.menu li:not(:hover) div,
+.menu > a:not(:hover) div {
+	display: none;
+}
+.menu li > div:before,
+.menu > a > div:before {
+	position: absolute;
+	left: -1em;
+	top: 0.5em;
+	content: "";
+	border: 0.5em solid transparent;
+	border-right-color: rgba(0, 0, 0, 0.7);
+}
+.menu li > div p {
+	margin: 0;
+}
+.menu li > div p + p {
+	margin-top: 0.5em;
+}

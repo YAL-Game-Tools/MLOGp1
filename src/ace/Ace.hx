@@ -1,4 +1,5 @@
 package ace;
+import haxe.Constraints.Function;
 import haxe.extern.EitherType;
 import js.html.Element;
 
@@ -10,6 +11,7 @@ import js.html.Element;
 	static function edit(el:EitherType<Element, String>):AceEditor;
 	static function require(path:String):Dynamic;
 	static function define(path:String, require:Array<String>, impl:AceImpl):Void;
+	static function loadModule(path:String, cb:Function):Void;
 }
 
 extern typedef AceRequire = String->Dynamic;

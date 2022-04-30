@@ -26,7 +26,7 @@ body {
 	margin-top: 0.25em;
 	font-family: Consolas, monospace;
 }
-.app #editor, .app .ace_editor, #statusbar {
+.app #editor, .app .ace_editor, #statusbar, .popup {
 	border: 1px solid rgba(0,0,0,0.5);
 }
 .topbar {
@@ -42,6 +42,8 @@ body {
 	display: flex;
 	align-items: center;
 	min-height: 1.25em;
+	background-color: var(--ace-bg);
+	color: var(--ace-fg);
 }
 #statusbar span {
 	text-overflow: ellipsis;
@@ -78,4 +80,46 @@ body {
 	.main > .ace_editor:not(:first-child) {
 		margin-left: 0;
 	}
+}
+
+.popup-ctr {
+}
+.popup-bg {
+	z-index: 1000;
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+}
+.popup {
+	z-index: 1001;
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	margin: auto;
+	max-width: calc(100% - 1em);
+	max-height: calc(100vh - 1em);
+	background-color: var(--ace-bg);
+	color: var(--ace-fg);
+	border: 1px solid;
+	border-color: var(--ace-fg);
+	padding: 0.25em;
+	box-shadow: 0 1px 8px rgba(0, 0, 0, 1);
+	overflow: auto auto;
+	box-sizing: border-box;
+	
+	display: flex;
+	flex-direction: column;
+}
+#settings .popup {
+	width: 16em;
+	height: 8em;
+	resize: both;
+}
+.popup > *:not(:first-child) {
+	margin-top: 0.25em;
+}
+.popup > * > select {
+	widtH: 100%;
+}
+.popup > input[type="button"] {
+	widtH: 100%;
 }

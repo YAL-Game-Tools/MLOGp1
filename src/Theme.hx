@@ -10,24 +10,19 @@ import js.html.SelectElement;
 class Theme {
 	public static var themeSelect:SelectElement;
 	public static function set(name:String) {
-		var path = "ace/theme/" + name;
+		var path = name;
+		if (!StringTools.startsWith(path, "ace/")) path = "ace/theme/";
 		Main.editor.setTheme(path, function() {
 			var ctr = Main.editor.container;
 			var css = Browser.window.getComputedStyle(ctr);
-			var bg = css.backgroundColor;
-			var fg = css.color;
-			
-			inline function applyColors(el:Element) {
-				el.style.backgroundColor = bg;
-				el.style.color = fg;
-			}
-			applyColors(StatusBar.element);
-			//applyColors(themeSelect);
+			var st = Browser.document.documentElement.style;
+			st.setProperty("--ace-bg", css.backgroundColor);
+			st.setProperty("--ace-fg", css.color);
 		});
 		Main.output.setTheme(path);
 	}
 	public static function init() {
-		themeSelect = cast Browser.document.getElementById("theme");
+		/*themeSelect = cast Browser.document.getElementById("theme");
 		var themeName = Storage.get("theme");
 		if (themeName == null || themeName == "") themeName = "github";
 		set(themeName);
@@ -37,6 +32,6 @@ class Theme {
 			var themeName = themeSelect.value;
 			Storage.set("theme", themeName);
 			set(themeName);
-		}
+		}*/
 	}
 }

@@ -2,6 +2,7 @@ package;
 
 import ace.Ace;
 import ace.AceEditor;
+import ace.AceExtras;
 import compiler.Compiler;
 import compiler.Simplifier;
 import highlight.MLHighlightRules;
@@ -11,6 +12,8 @@ import js.html.KeyboardEvent;
 import js.html.SelectElement;
 import js.html.Storage;
 import js.html.TextAreaElement;
+import ui.SettingsMenu;
+import ui.StatusBar;
 
 /**
  * ...
@@ -19,7 +22,15 @@ import js.html.TextAreaElement;
 class Main {
 	public static var editor:AceEditor;
 	public static var output:AceEditor;
+	public static var copyField:TextAreaElement;
+	public static function updateOutput() {
+		var code = editor.getValue();
+		copyField.value = code;
+		output.setValueAndClearSelection(Compiler.proc(code));
+	}
 	static function main() {
+		Storage.init();
+		
 		editor = Ace.edit("editor");
 		editor.container.id = "editor";
 		(cast Browser.window).aceEditor = editor;
@@ -33,28 +44,25 @@ class Main {
 		
 		for (e in [editor, output]) {
 			e.session.setMode("ace/mode/mlog");
-			e.setOption("printMargin", false);
+			AceExtras.bind(e);
 		}
+		AceExtras.post();
 		
-		var copyField:TextAreaElement = cast Browser.document.getElementById("copyfield");
+		copyField = cast Browser.document.getElementById("copyfield");
 		copyField.value = "Built at " + ace.AceMacro.buildDate() + "\nOutput will go here.";
 		
 		var lang = Ace.require("ace/lib/lang");
 		var delayCompile = lang.delayedCall(function() {
-			var code = editor.getValue();
-			copyField.value = code;
-			output.setValue(Compiler.proc(code));
-			output.clearSelection();
+			updateOutput();
 		});
 		(cast editor).on("change", function() {
 			delayCompile.delay(1000);
 		});
 		
-		Storage.init();
 		var code = Storage.get("code");
 		if (code != null && code != "") editor.setValueAndClearSelection(code);
 		StatusBar.init();
-		Theme.init();
+		SettingsMenu.init();
 		
 		Browser.document.getElementById("simplify").onclick = function(_) {
 			editor.setValue(Simplifier.proc(editor.getValue()));
