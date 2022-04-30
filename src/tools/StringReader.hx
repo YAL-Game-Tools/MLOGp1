@@ -91,6 +91,7 @@ using StringTools;
 			}
 		}
 	}
+	
 	public function skipIdent() {
 		while (loop) {
 			var c = peek();
@@ -104,6 +105,21 @@ using StringTools;
 		skipIdent();
 		return substring(start, pos);
 	}
+	
+	public function skipAtIdent() {
+		while (loop) {
+			var c = peek();
+			if (inline c.isAtIdent1()) {
+				skip();
+			} else break;
+		}
+	}
+	public function readAtIdent() {
+		var start = pos;
+		skipAtIdent();
+		return substring(start, pos);
+	}
+	
 	public function skipLine() {
 		while (loop) {
 			switch (peek()) {

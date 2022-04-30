@@ -57,10 +57,10 @@ class MLHighlightRules extends AceHighlight {
 		}
 		var base = [
 			rxRule(MLTK.Comment, ~/#.*/),
-			rxRule(MLTK.AtTag, ~/@\w+/),
 			rxRule(MLTK.Boolean, ~/(?:true|false)\b/),
 			rxRule(MLTK.Special, ~/null\b/),
 			rule(MLTK.CString, rsString),
+			rule(MLTK.AtTag, rsAtTag),
 			rule(MLTK.Number, rsNumber),
 			rule(MLTK.Variable, rsIdent),
 			rule(MLTK.Comma, ","),

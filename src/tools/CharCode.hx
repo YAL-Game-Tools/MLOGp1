@@ -48,4 +48,12 @@ abstract CharCode(Int) from Int to Int {
 			|| (this >= "0".code && this <= "9".code)
 		);
 	}
+	
+	public function isAtIdent1() {
+		return (this == "_".code || this == "-".code
+			|| (this >= "a".code && this <= "z".code)
+			|| (this >= "A".code && this <= "Z".code)
+			|| (this >= "0".code && this <= "9".code)
+		);
+	}
 }
