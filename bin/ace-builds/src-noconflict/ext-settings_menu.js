@@ -448,11 +448,11 @@ var modes = modelist.modes.map(function(x){
 
 var optionGroups = {
     Main: {
-        Mode: {
+        /*Mode: {
             path: "mode",
             type: "select",
             items: modes
-        },
+        },*/
         Theme: {
             path: "theme",
             type: "select",
@@ -468,6 +468,10 @@ var optionGroups = {
                 { caption : "Sublime", value : "ace/keyboard/sublime" },
                 { caption : "VSCode", value : "ace/keyboard/vscode" }
             ]
+        },
+        "Font Family": {
+            path: "fontFamily",
+            type: "string",
         },
         "Font Size": {
             path: "fontSize",
@@ -704,6 +708,24 @@ var OptionPanel = function(editor, element) {
         } else if (option.type == "number") {
             control = ["input", {type: "number", value: value || option.defaultValue, style:"width:3em", oninput: function() {
                 self.setOption(option, parseInt(this.value));
+            }}];
+            if (option.ariaLabel) {
+                control[1]["aria-label"] = option.ariaLabel;
+            } else {
+                control[1].id = key;
+            }
+            if (option.defaults) {
+                control = [control, option.defaults.map(function(item) {
+                    return ["button", {onclick: function() {
+                        var input = this.parentNode.firstChild;
+                        input.value = item.value;
+                        input.oninput();
+                    }}, item.caption];
+                })];
+            }
+        } else if (option.type == "string") {
+            control = ["input", {type: "text", value: value || option.defaultValue, oninput: function() {
+                self.setOption(option, this.value);
             }}];
             if (option.ariaLabel) {
                 control[1]["aria-label"] = option.ariaLabel;
