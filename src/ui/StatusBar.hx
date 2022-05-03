@@ -43,7 +43,7 @@ class StatusBar {
 		if (rxGetLink.test(line)) return "<b>getlink</b> resultVar index";
 		
 		@:static var rxJump = jsRx(~/^jump\b/);
-		if (rxJump.test(line)) return "<b>jump</b> labelNameOrOffset";
+		if (rxJump.test(line)) return "<b>jump</b> labelNameOrOffset [condition a b]";
 		
 		@:static var rxUControl = jsRx(~/^ucontrol\s+idle\b/);
 		if (rxUControl.test(line)) return "<b>ucontrol idle</b> (no args) · default state";
@@ -112,10 +112,10 @@ class StatusBar {
 		if (rxLookup.test(line)) return "<b>lookup</b> (item|block|unit|liquid) index";
 		
 		@:static var rxPrint = jsRx(~/^print\b/);
-		if (rxPrint.test(line)) return "<b>print</b> expr";
+		if (rxPrint.test(line)) return "<b>print</b> [...exprs]";
 		
 		@:static var rxPrintFlush = jsRx(~/^printflush\b/);
-		if (rxPrintFlush.test(line)) return "<b>printflush</b> messageBlock";
+		if (rxPrintFlush.test(line)) return "<b>printflush</b> messageBlock [...exprs]";
 		
 		return "";
 	}
