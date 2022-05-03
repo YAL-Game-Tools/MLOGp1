@@ -22,6 +22,7 @@ class Compiler {
 	var length:Int;
 	var actions:Array<LogicAction> = [];
 	var annotations:Array<AceAnnotation> = [];
+	var macroDepth = 0;
 	public var macros:Map<String, MagicMacro> = new Map();
 	
 	function new(code:String) {
@@ -144,10 +145,12 @@ class Compiler {
 			}
 			var tups = mcr.proc(args, nextTab);
 			var _tab = nextTab;
+			if (++macroDepth >= 128) throw "Recursive macro " + mt[1];
 			var actions = [for (tup in tups) {
 				if (tup.comment != null) nextNotes.push(tup.comment);
 				readAction(tup.line); // ->
 			}];
+			macroDepth--;
 			nextTab = _tab;
 			return action(Block(actions));
 		}
