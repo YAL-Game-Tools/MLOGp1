@@ -2,7 +2,8 @@ package;
 
 import ace.Ace;
 import ace.AceEditor;
-import ace.AceExtras;
+import editor.AceExtras;
+import editor.*;
 import compiler.Compiler;
 import compiler.Simplifier;
 import highlight.MLHighlightRules;
@@ -47,6 +48,7 @@ class Main {
 			AceExtras.bind(e);
 		}
 		AceExtras.post();
+		for (e in [editor, output]) AceCompleters.proc(e);
 		
 		copyField = cast Browser.document.getElementById("copyfield");
 		copyField.value = "Built at " + ace.AceMacro.buildDate() + "\nOutput will go here.";

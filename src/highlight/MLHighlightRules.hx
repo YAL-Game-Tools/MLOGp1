@@ -41,7 +41,7 @@ class MLHighlightRules extends AceHighlight {
 		var keywordMap = listToMap([
 			'read', 'write', 'draw', 'print', 'drawflush', 'printflush',
 			'getlink', 'control', 'radar', 'sensor', 'set', 'op', 'end', 'jump', 'noop',
-			'ubind', 'ucontrol', 'ulocate', 'wait'
+			'ubind', 'ucontrol', 'ulocate', 'wait', 'lookup',
 		], MLTK.Keyword);
 		function getExprType(expr:String):AceTokenType {
 			var c:CharCode = expr.charCodeAt(0);
@@ -61,6 +61,7 @@ class MLHighlightRules extends AceHighlight {
 			rxRule(MLTK.Special, ~/null\b/),
 			rule(MLTK.CString, rsString),
 			rule(MLTK.AtTag, rsAtTag),
+			rule(MLTK.AtTag, "@"),
 			rule(MLTK.Number, rsNumber),
 			rule(MLTK.Variable, rsIdent),
 			rule(MLTK.Comma, ","),

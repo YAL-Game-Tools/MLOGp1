@@ -1,5 +1,6 @@
 package ace ;
 import ace.AceSession;
+import ace.types.AceEditorCompleter;
 import ace.types.AceSelection;
 import haxe.Constraints.Function;
 import haxe.extern.EitherType;
@@ -23,8 +24,10 @@ import js.html.Element;
 	function getOptions():Dynamic;
 	function clearSelection():Void;
 	function on(event:String, fn:Function):Void;
+	var completer:AceEditorCompleter;
 	var session:AceSession;
 	var renderer:Dynamic;
 	var container:Element;
 	var selection:AceSelection;
+	var commands:Dynamic;
 }

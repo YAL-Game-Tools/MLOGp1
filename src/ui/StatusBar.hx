@@ -108,6 +108,9 @@ class StatusBar {
 		@:static var rxULocate = jsRx(~/^ulocate\b/);
 		if (rxULocate.test(line)) return "<b>ulocate</b> (ore|building|spawn|damaged) ...";
 		
+		@:static var rxLookup = jsRx(~/^lookup\b/);
+		if (rxLookup.test(line)) return "<b>lookup</b> (item|block|unit|liquid) index";
+		
 		@:static var rxPrint = jsRx(~/^print\b/);
 		if (rxPrint.test(line)) return "<b>print</b> expr";
 		

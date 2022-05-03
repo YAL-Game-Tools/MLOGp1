@@ -1,5 +1,6 @@
-package ace;
+package editor;
 import ace.AceEditor;
+import editor.AceCompleters;
 import haxe.DynamicAccess;
 import haxe.Json;
 import js.Browser;
