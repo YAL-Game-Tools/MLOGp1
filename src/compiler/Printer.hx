@@ -67,6 +67,10 @@ class Printer {
 		}
 	}
 	function printImpl(action:LogicAction, tab:Int) {
+		if (action == null) { // uh oh
+			out.push('noop # (null-instruction - please report)');
+			return;
+		}
 		switch (action.def) {
 			case Label(name, act):
 				labels[name] = pc;

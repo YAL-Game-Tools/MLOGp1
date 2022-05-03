@@ -26,6 +26,7 @@ class Compiler {
 	public var macros:Map<String, MagicMacro> = new Map();
 	
 	function new(code:String) {
+		code = StringTools.replace(code, "\r", "");
 		lines = code.split("\n");
 		length = lines.length;
 	}
@@ -176,7 +177,7 @@ class Compiler {
 				q.skipLineSpaces();
 			}
 			if (flushTarget != null) out.push(action(Other("printflush " + flushTarget)));
-			return out.length == 1 ? out[1] : action(Block(out));
+			return out.length == 1 ? out[0] : action(Block(out));
 		}
 		
 		@:static var rxAction = new RegExp("^[_a-zA-Z]");
