@@ -48,7 +48,10 @@ class Main {
 			AceExtras.bind(e);
 		}
 		AceExtras.post();
-		for (e in [editor, output]) AceCompleters.proc(e);
+		for (e in [editor, output]) {
+			var cc = AceCompleters.proc(e);
+			if (e == editor) AceCompleters.inst = cc;
+		}
 		
 		copyField = cast Browser.document.getElementById("copyfield");
 		copyField.value = "Built at " + ace.AceMacro.buildDate() + "\nOutput will go here.";

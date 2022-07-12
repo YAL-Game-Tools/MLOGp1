@@ -10,6 +10,7 @@ import highlight.MLHighlightRules;
 import highlight.MLRegStr;
 import js.lib.RegExp;
 import compiler.LogicAction;
+import editor.AceCompleters;
 
 /**
  * ...
@@ -55,6 +56,7 @@ class Compiler {
 		@:static var rxLabel = new RegExp('^(($rsIdent)\\s*:\\s*)(.*)');
 		var mt = rxLabel.exec(line);
 		if (mt != null) {
+			AceCompleters.inst.mark(mt[2], "label");
 			nextNotes.push(mt[1]);
 			var labelAction = readAction(mt[3]);
 			return action(Label(mt[2], labelAction));
@@ -91,6 +93,7 @@ class Compiler {
 			var tup = new CodeTuple(nextTab, mt[2], nextNotes.shift());
 			MagicMacro.read(this, mt[1], mt[2], tup);
 			nextNotes.push("macro: " + mt[1]);
+			editor.AceCompleters.inst.mark(mt[1], "macro");
 			return action(Text(""));
 		}
 		
@@ -210,6 +213,7 @@ class Compiler {
 		}
 	}
 	public static function proc(code:String) {
+		editor.AceCompleters.inst.clearVars();
 		var comp = new Compiler(code);
 		comp.procAll();
 		Main.editor.session.setAnnotations(comp.annotations);

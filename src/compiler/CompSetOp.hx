@@ -6,6 +6,8 @@ package compiler;
  */
 class CompSetOp {
 	public static function proc(comp:Compiler, result:String, resIndex:String, op:String, line:String):LogicAction {
+		editor.AceCompleters.inst.mark(result, "variable");
+		
 		var q = new CodeReader(line);
 		var arg = q.readExpr();
 		q.skipLineSpaces();

@@ -16,10 +16,24 @@ import js.lib.RegExp;
 class AceCompleters {
 	var completers:Array<AceAutoCompleter> = [];
 	var editor:AceEditor;
+	var varItems:AceAutoCompleteItems = [];
+	var varMap:Map<String, Bool> = new Map();
+	public function mark(name:String, kind:String) {
+		if (varMap.exists(name)) return;
+		varMap[name] = true;
+		varItems.push(new AceAutoCompleteItem(name, kind));
+	}
+	public function clearVars() {
+		varItems.clear();
+		varMap.clear();
+	}
 	
 	function new(editor:AceEditor) {
 		this.editor = editor;
 		completers.push(initAtCompleter());
+		var ac = new AceSimpleCompleter(varItems, [], true);
+		ac.items = varItems;
+		completers.push(ac);
 	}
 	
 	function initAtCompleter() {
@@ -73,8 +87,10 @@ class AceCompleters {
 		});
 		editor.commands.on("afterExec", onAfterExec);
 	}
+	public static var inst:AceCompleters;
 	public static function proc(editor:AceEditor) {
 		var cc = new AceCompleters(editor);
 		cc.bind();
+		return cc;
 	}
 }
