@@ -26,6 +26,7 @@ enum abstract LogicCondOperator(String) {
 		opToLogic = o2l;
 		return l2o;
 	}
+	public inline function toString():String return this;
 	public static var rsCondOp = "(?:===?|<[>=]?|>=?|!=)";
 	var Equal = "equal";
 	var NotEqual = "notEqual";

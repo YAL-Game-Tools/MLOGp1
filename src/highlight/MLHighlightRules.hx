@@ -100,14 +100,52 @@ class MLHighlightRules extends AceHighlight {
 					"\\s*", MLTK.Text,
 					rsOpt(rsExpr, eol), MLTK.Pending, // 2
 					"\\s*", MLTK.Text,
-					"(?:" + LogicCondOperator.rsCondOp + "|" + rsIdent + ")", MLTK.Operator,
+					"(?:" + LogicCondOperator.rsCondOp + "|" + rsIdent + "|\\S+)", MLTK.Operator,
 					"\\s*", MLTK.Text,
 					rsOpt(rsExpr, eol), MLTK.Pending, // 6
 					"\\s*", MLTK.Text,
 					"(?:then\\b)?", MLTK.Keyword,
-				].concat(eol ? eolPairRaw : []),
+				].concat(eol ? eolPair : []),
 			});
-		}; pushEolRule(start, genIfThenRule);
+		};
+		start.push(rulePairsExt({
+			onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
+				tokens[3].type = getExprType(tokens[3].value);
+				return tokens;
+			},
+			next: "start",
+			pairs: [
+				"if\\b", MLTK.Keyword,
+				"\\s*", MLTK.Text,
+				"(?:\\!)?", MLTK.Operator,
+				rsOpt(rsExpr, true), MLTK.Pending,
+				"\\s*", MLTK.Text,
+				"then\\b", MLTK.Keyword,
+			]
+		}));
+		start.push(rulePairsExt({
+			onPairMatch: function(tokens:Array<AceToken>, currentState, stack, line, row) {
+				tokens[3].type = getExprType(tokens[3].value);
+				var op = tokens[5].value;
+				tokens[5].type = if (LogicCondOperator.opToLogic.exists(op)) {
+					MLTK.Operator;
+				} else if (op == "then" || LogicCondOperator.logicToOp.exists(cast op)) {
+					MLTK.Keyword;
+				} else MLTK.Invalid;
+				return tokens;
+			},
+			next: "start",
+			pairs: [
+				"if\\b", MLTK.Keyword,
+				"\\s*", MLTK.Text,
+				"(?:\\!)?", MLTK.Operator,
+				rsOpt(rsExpr, true), MLTK.Pending, // 2
+				"\\s*", MLTK.Text,
+				"(?:" + LogicCondOperator.rsCondOp + "|" + rsIdent + "|\\S+)?", MLTK.Operator,
+				"\\s*", MLTK.Text,
+			].concat(eolPair)
+		}));
+		pushEolRule(start, genIfThenRule);
 		
 		function genJumpRule(eol:Bool) { // `jump label`
 			return rulePairsExt({
@@ -124,7 +162,7 @@ class MLHighlightRules extends AceHighlight {
 					"\\w*", MLTK.Pending,
 					"\\s*", MLTK.Text,
 					"(?:" + rsIdent + ")?", MLTK.Pending,
-				].concat(eol ? eolPairRaw : []),
+				].concat(eol ? eolPair : []),
 			});
 		}; pushEolRule(start, genJumpRule);
 		

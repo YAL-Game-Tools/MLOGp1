@@ -1,4 +1,5 @@
 package compiler;
+import compiler.LogicCondOperator;
 import js.lib.RegExp;
 import compiler.LogicAction;
 
@@ -11,33 +12,48 @@ class CompIfThen {
 	public static function proc(comp:Compiler, line:String) {
 		var q = new CodeReader(line);
 		q.skipLineSpaces();
-		var a = q.readExpr();
-		q.skipLineSpaces();
-		var c = q.read();
-		var op:LogicCondOperator;
-		switch (c) {
-			case "=".code:
-				if (q.skipIfEqu("=".code)) {
-					op = q.skipIfEqu("=".code) ? StrictEqual : Equal;
-				} else op = Equal;
-			case "!".code if (q.skipIfEqu("=".code)): op = NotEqual;
-			case "<".code:
-				if (q.skipIfEqu(">".code)) { // <>
-					op = NotEqual;
-				} else if (q.skipIfEqu("=".code)) { // <=
-					op = LessThanEq;
-				} else op = LessThan;
-			case ">".code:
-				op = q.skipIfEqu("=".code) ? GreaterThanEq : GreaterThan;
-			default:
-				if (c.isIdent0()) {
-					q.pos--;
-					op = cast q.readIdent();
-				} else throw "Expected an operator";
+		var a:String = null;
+		var op:LogicCondOperator = null;
+		var b:String = null;
+		if (q.skipIfEqu("!".code)) {
+			q.skipLineSpaces();
+			op = LogicCondOperator.Equal;
+			b = "false";
 		}
+		a = q.readExpr();
 		q.skipLineSpaces();
-		var b = q.readExpr();
-		q.skipLineSpaces();
+		if (op == null) {
+			var c = q.read();
+			switch (c) {
+				case "=".code:
+					if (q.skipIfEqu("=".code)) {
+						op = q.skipIfEqu("=".code) ? StrictEqual : Equal;
+					} else op = Equal;
+				case "!".code if (q.skipIfEqu("=".code)): op = NotEqual;
+				case "<".code:
+					if (q.skipIfEqu(">".code)) { // <>
+						op = NotEqual;
+					} else if (q.skipIfEqu("=".code)) { // <=
+						op = LessThanEq;
+					} else op = LessThan;
+				case ">".code:
+					op = q.skipIfEqu("=".code) ? GreaterThanEq : GreaterThan;
+				default:
+					if (c.isIdent0()) {
+						q.pos--;
+						op = cast q.readIdent();
+					} else throw "Expected an operator";
+			}
+			q.skipLineSpaces();
+		}
+		if (op.toString() == "then") {
+			op = LogicCondOperator.NotEqual;
+			b = "false";
+		}
+		if (b == null) {
+			b = q.readExpr();
+			q.skipLineSpaces();
+		}
 		if (q.skipIfIdentEquals("then")) q.skipLineSpaces();
 		if (!q.loop) { // `if a ?? b [then]<eol>...actions<eol>endif`
 			var thenActions = [];

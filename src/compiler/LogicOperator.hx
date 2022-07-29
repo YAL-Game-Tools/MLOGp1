@@ -62,7 +62,7 @@ enum abstract LogicOperator(String) {
 		logOpToBinOp = l2b;
 		b2l;
 	};
-	public static inline var rsOps = '\\+|\\-|==?=?|&&?|>[=>]|<[<>]|!=|\\/\\/?|\\*\\*?|%|\\|';
+	public static inline var rsOps = '\\+|\\-|==?=?|&&?|>[=>]?|<[<=>]?|!=|\\/\\/?|\\*\\*?|%|\\|';
 	public static inline var rsSetOps = '\\+|\\-|\\*\\*?|//?|%|<<|>>|&|^|\\|';
 	public static var rxOpHere:RegExp = new RegExp("^(?:" + rsOps +")");
 	public static var rxIsSetOp:RegExp = new RegExp("^(?:" + rsSetOps +")$");
