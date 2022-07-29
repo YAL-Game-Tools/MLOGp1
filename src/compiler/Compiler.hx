@@ -133,7 +133,7 @@ class Compiler {
 					if (q.skipIfEqu(")".code)) {
 						closed = true; break;
 					} else if (q.skipIfEqu(",".code)) {
-						// OK!
+						q.skipLineSpaces();
 					} else throw "Expected a `)` or `,` in macro arguments.";
 				}
 				if (!closed) throw "Unclosed macro call";
