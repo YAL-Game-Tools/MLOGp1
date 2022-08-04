@@ -101,7 +101,7 @@ class Compiler {
 		mt = rxJump.exec(line);
 		if (mt != null) {
 			@:static var rxAlways = new RegExp("^\\s*always");
-			var arg = mt[3];
+			var arg = StringTools.trim(mt[3]);
 			if (rxAlways.test(arg)) arg = "";
 			return action(Jump(mt[1], mt[2], arg));
 		}
